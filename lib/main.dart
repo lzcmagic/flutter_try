@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'newroute.dart';
+import 'gankpage.dart';
+import 'welfarepage.dart';
+import 'xiandupage.dart';
+import 'mine.dart';
+import 'config/colors.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,18 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+      theme: _kDemoTheme,
       routes: {'newPage': (context) => NewPage()},
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -43,125 +37,42 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-
-
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
-  List<bool> _selectList = [true, false, false, false];
-  List<Tab> myTabs = [
-    Tab(
-      text: 'aaa',
-      icon: Icon(Icons.list),
-    ),
-    Tab(
-      text: 'aaa',
-      icon: Icon(Icons.list),
-    ),
-    Tab(
-      text: 'aaa',
-      icon: Icon(Icons.list),
-    ),
-    Tab(
-      text: 'aaa',
-      icon: Icon(Icons.list),
-    )
+class _MyHomePageState extends State<MyHomePage> {
+  int _currentIndex = 0;
+  List<BottomNavigationBarItem> bottomItems = [
+    BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('gank')),
+    BottomNavigationBarItem(icon: Icon(Icons.web), title: Text('welfare')),
+    BottomNavigationBarItem(icon: Icon(Icons.local_taxi), title: Text('relax')),
+    BottomNavigationBarItem(icon: Icon(Icons.message), title: Text('mine')),
   ];
-  TabController _tabController;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(vsync: this, length: myTabs.length);
-  }
+  final _widgetOptions = [
+    GankPage(),
+    WelfarePage(),
+    XianDuPage(),
+    MinePage(),
+  ];
 
-  void changePosition(int position) {
+  void _onItemTapped(int index) {
     setState(() {
-      for (int i = 0; i < _selectList.length; i++) {
-        if (position == i) {
-          _selectList[i] = true;
-        } else {
-          _selectList[i] = false;
-        }
-      }
+      _currentIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        bottom: TabBar(
-          tabs: myTabs,
-          controller: _tabController,
-        ),
+
+      body: Center(
+        child: _widgetOptions.elementAt(_currentIndex),
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('drawer head'),
-              decoration: BoxDecoration(color: Colors.amber),
-            ),
-            Column(
-//              mainAxisSize: ,
-              children: <Widget>[
-                ListTile(
-                  leading: const Icon(Icons.subtitles),
-                  title: Text('aaa'),
-                  selected: _selectList[0],
-                  onTap: () {
-                    changePosition(0);
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.subtitles),
-                  title: Text('aaa'),
-                  selected: _selectList[1],
-                  onTap: () {
-                    changePosition(1);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-            ListTile(
-              title: Text('more'),
-            ),
-            Column(
-              children: <Widget>[
-                ListTile(
-                  leading: const Icon(Icons.subtitles),
-                  title: Text('aaa'),
-                  selected: _selectList[2],
-                  onTap: () {
-                    changePosition(2);
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.subtitles),
-                  title: Text('aaa'),
-                  selected: _selectList[3],
-                  onTap: () {
-                    changePosition(3);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: myTabs.map((Tab tab) {
-          return Center(child: Text(tab.text));
-        }).toList(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: bottomItems,
+        currentIndex: _currentIndex,
+        onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -177,16 +88,45 @@ class _MyHomePageState extends State<MyHomePage>
   }
 }
 
-/// xian du item
-class XDItem extends StatefulWidget {
-  @override
-  _XDItemState createState() => _XDItemState();
+
+final ThemeData _kDemoTheme = _buildCustomTheme();
+ThemeData _buildCustomTheme() {
+  final ThemeData base = ThemeData.dark();
+  return base.copyWith(
+    accentColor: kColorAccent,
+    primaryColor: kPrimary,
+    buttonColor: kPrimary,
+    scaffoldBackgroundColor: kBackground,
+//    cardColor: kShrineAltDarkGrey,
+    textSelectionColor: kPrimary,
+    errorColor: kError,
+    textTheme: _buildShrineTextTheme(base.textTheme),
+//    primaryTextTheme: _buildShrineTextTheme(base.primaryTextTheme),
+    accentTextTheme: _buildShrineTextTheme(base.accentTextTheme),
+    primaryIconTheme: base.iconTheme.copyWith(
+        color: kPrimary
+    ),
+//    inputDecorationTheme: InputDecorationTheme(
+//      border: CutCornersBorder(),
+//    ),
+  );
 }
 
-class _XDItemState extends State<XDItem> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return null;
-  }
+TextTheme _buildShrineTextTheme(TextTheme base) {
+  return base.copyWith(
+    headline: base.headline.copyWith(
+      fontWeight: FontWeight.w500,
+    ),
+    title: base.title.copyWith(
+        fontSize: 18.0
+    ),
+    caption: base.caption.copyWith(
+      fontWeight: FontWeight.w400,
+      fontSize: 14.0,
+    ),
+  ).apply(
+//    fontFamily: 'Rubik',
+    displayColor: kColorAccent,
+    bodyColor: kColorAccent,
+  );
 }
