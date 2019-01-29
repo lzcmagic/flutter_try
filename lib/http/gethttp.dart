@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_app/model/basemodel.dart';
 import 'package:flutter_app/model/gankmodel.dart';
 
 class HttpProvider{

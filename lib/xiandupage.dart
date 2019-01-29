@@ -47,6 +47,7 @@ class XianDuPageState extends State<XianDuPage> {
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),
           child: Container(
+            padding: EdgeInsets.only(top: 22.0),
             color: kSecondColor,
             child: TabBar(
               tabs: _tabs,
