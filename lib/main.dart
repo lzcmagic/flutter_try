@@ -5,6 +5,10 @@ import 'welfarepage.dart';
 import 'xiandupage.dart';
 import 'mine.dart';
 import 'config/colors.dart';
+import 'package:flutter_app/http/gethttp.dart';
+import 'package:flutter_app/util/sputil.dart';
+import 'dart:convert';
+import 'package:flutter_app/model/xdcategory.dart';
 
 void main() => runApp(MyApp());
 
@@ -43,9 +47,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   List<BottomNavigationBarItem> bottomItems = [
-    BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('gank')),
-    BottomNavigationBarItem(icon: Icon(Icons.web), title: Text('welfare')),
-    BottomNavigationBarItem(icon: Icon(Icons.local_taxi), title: Text('relax')),
+    BottomNavigationBarItem(icon: Icon(Icons.description), title: Text('gank')),
+    BottomNavigationBarItem(icon: Icon(Icons.image), title: Text('welfare')),
+    BottomNavigationBarItem(icon: Icon(Icons.receipt), title: Text('relax')),
     BottomNavigationBarItem(icon: Icon(Icons.message), title: Text('mine')),
   ];
 
@@ -56,6 +60,25 @@ class _MyHomePageState extends State<MyHomePage> {
     MinePage(),
   ];
 
+  @override
+  void initState() {
+    GetApi().getXianduCategories().then((res) {
+      XDCategory category = XDCategory.fromMap(json.decode(res.toString()));
+      if (category != null && !category.error) {
+        var results = category.results;
+        List<String> strings = <String>[];
+        List<String> stringsIds = <String>[];
+        for (var i = 0; i < results.length; i++) {
+          strings.add(results[i].name);
+          stringsIds.add(results[i].en_name);
+        }
+        SPUtil().saveString(strings);
+        SPUtil().saveCategoryId(stringsIds);
+      }
+    });
+    super.initState();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -65,7 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Center(
         child: _widgetOptions.elementAt(_currentIndex),
       ),
@@ -74,22 +96,22 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-//          Navigator.pushNamed(context, 'newPage');
-          Navigator.push(context, new MaterialPageRoute(builder: (context) {
-            return new NewPage();
-          }));
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+//      floatingActionButton: FloatingActionButton(
+//        onPressed: () {
+////          Navigator.pushNamed(context, 'newPage');
+//          Navigator.push(context, new MaterialPageRoute(builder: (context) {
+//            return new NewPage();
+//          }));
+//        },
+//        tooltip: 'Increment',
+//        child: Icon(Icons.add),
+//      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
 
-
 final ThemeData _kDemoTheme = _buildCustomTheme();
+
 ThemeData _buildCustomTheme() {
   final ThemeData base = ThemeData.dark();
   return base.copyWith(
@@ -103,9 +125,7 @@ ThemeData _buildCustomTheme() {
     textTheme: _buildShrineTextTheme(base.textTheme),
 //    primaryTextTheme: _buildShrineTextTheme(base.primaryTextTheme),
     accentTextTheme: _buildShrineTextTheme(base.accentTextTheme),
-    primaryIconTheme: base.iconTheme.copyWith(
-        color: kPrimary
-    ),
+    primaryIconTheme: base.iconTheme.copyWith(color: kPrimary),
 //    inputDecorationTheme: InputDecorationTheme(
 //      border: CutCornersBorder(),
 //    ),
@@ -113,20 +133,20 @@ ThemeData _buildCustomTheme() {
 }
 
 TextTheme _buildShrineTextTheme(TextTheme base) {
-  return base.copyWith(
-    headline: base.headline.copyWith(
-      fontWeight: FontWeight.w500,
-    ),
-    title: base.title.copyWith(
-        fontSize: 18.0
-    ),
-    caption: base.caption.copyWith(
-      fontWeight: FontWeight.w400,
-      fontSize: 14.0,
-    ),
-  ).apply(
+  return base
+      .copyWith(
+        headline: base.headline.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+        title: base.title.copyWith(fontSize: 18.0),
+        caption: base.caption.copyWith(
+          fontWeight: FontWeight.w400,
+          fontSize: 14.0,
+        ),
+      )
+      .apply(
 //    fontFamily: 'Rubik',
-    displayColor: kColorAccent,
-    bodyColor: kColorAccent,
-  );
+        displayColor: kColorAccent,
+        bodyColor: kColorAccent,
+      );
 }

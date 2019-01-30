@@ -37,4 +37,35 @@ class GetApi{
     }
       return response;
   }
+
+  Future<Response> getXianduCategories() async{
+    Response response;
+    try{
+      response=await HttpProvider().providerDio().get('xiandu/categories');
+    }catch(e){
+      print(e.toString());
+    }
+    return response;
+  }
+
+
+  Future<Response> getXianduWithCategory(String category) async{
+    Response response;
+    try{
+      response=await HttpProvider().providerDio().get('xiandu/category/$category');
+    }catch(e){
+      print(e.toString());
+    }
+    return response;
+  }
+
+  Future<Response> getXianduDetail(String categoryid,int page) async{
+    Response response;
+    try{
+      response=await HttpProvider().providerDio().get('xiandu/data/id/$categoryid/count/10/page/$page');
+    }catch(e){
+      print(e.toString());
+    }
+    return response;
+  }
 }

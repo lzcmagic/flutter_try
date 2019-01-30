@@ -44,9 +44,10 @@ class ResultsListBean {
     resultsListBean.used = map['used'];
 
     List<dynamic> dynamicList0 = map['images'];
-    resultsListBean.images = new List();
-    resultsListBean.images.addAll(dynamicList0.map((o) => o.toString()));
-
+    if(dynamicList0!=null){
+      resultsListBean.images = new List();
+      resultsListBean.images.addAll(dynamicList0.map((o) => o.toString()));
+    }
     return resultsListBean;
   }
 

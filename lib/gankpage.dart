@@ -1,8 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'config/colors.dart';
 import 'package:flutter_app/http/gethttp.dart';
+import 'package:flutter_app/model/gankmodel.dart';
+import 'dart:convert';
+import 'package:flutter_app/view/loading_view.dart';
+import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
+import 'package:flutter_app/view/tipwidget.dart';
 
 class GankPage extends StatefulWidget {
   @override
@@ -10,55 +14,38 @@ class GankPage extends StatefulWidget {
 }
 
 class _GankPageState extends State<GankPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController _controller;
 
-  List<Tab> _tabs = [
-    Tab(text: 'aaa'),
+  static List<Tab> _tabs = [
+    Tab(text: 'all'),
     Tab(
-      text: 'bbb',
+      text: 'android',
     ),
     Tab(
-      text: 'ccc',
+      text: 'ios',
     ),
     Tab(
-      text: 'ddd',
+      text: 'web',
     )
   ];
 
-  Tab _selectedTab;
-
-  int _currentIndex = 0;
-
-  void _tapTab(int position) {
-    print('$position');
-  }
-
-  void _handleTabSelection() {
-    if (_currentIndex != _controller.index) {
-      _currentIndex = _controller.index;
-      _selectedTab = _tabs.elementAt(_controller.index);
-      print(
-          "Changed tab to: ${_selectedTab.toString().split('.').last} , index: ${_controller.index}");
-    }
-  }
+  List<DetailPage> _detailPages = [
+    DetailPage('all'),
+    DetailPage('Android'),
+    DetailPage('iOS'),
+    DetailPage('前端'),
+  ];
 
   @override
   void initState() {
     super.initState();
     _controller = TabController(vsync: this, length: _tabs.length);
-    _controller.addListener(_handleTabSelection);
-    GetApi().getGankInfo('all', 1).then((res) {
-      print('gank init$res');
-    }).catchError((err) {
-      print('$err');
-    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _controller.removeListener(_handleTabSelection);
     super.dispose();
   }
 
@@ -102,20 +89,151 @@ class _GankPageState extends State<GankPage>
             controller: _controller,
             tabs: _tabs,
             isScrollable: false,
-//            onTap: _tapTab,
             indicatorColor: indicatorColor,
           ),
         ),
       ),
       body: new TabBarView(
         controller: _controller,
-        dragStartBehavior: DragStartBehavior.start,
-        children: _tabs.map((Tab tab) {
-          return Center(
-            child: Text(tab.text),
-          );
-        }).toList(),
+        dragStartBehavior: DragStartBehavior.down,
+        children: _detailPages,
       ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class DetailPage extends StatefulWidget {
+  final String _type;
+
+  const DetailPage(this._type);
+
+  @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage>
+    with AutomaticKeepAliveClientMixin {
+  List<ResultsListBean> resultBeans = <ResultsListBean>[];
+  int currentPage = 1;
+  LoadingStatus _loadingStatus = LoadingStatus.loading;
+  ScrollController _scrollController;
+
+  void _handleScroll() {
+    var position = _scrollController.position;
+    if (position.pixels == position.maxScrollExtent) {
+      currentPage++;
+      getData();
+    }
+  }
+
+  void getData() {
+    GetApi().getGankInfo(widget._type, currentPage).then((res) {
+      var decode = json.decode(res.toString());
+      GKModel gkModels = GKModel.fromMap(decode);
+      if (!gkModels.error) {
+        setState(() {
+          _loadingStatus = LoadingStatus.success;
+          resultBeans.addAll(gkModels.results);
+        });
+      } else {
+        setState(() {
+          _loadingStatus = LoadingStatus.error;
+        });
+      }
+    }).catchError((err) {
+      setState(() {
+        _loadingStatus = LoadingStatus.error;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print(resultBeans.length);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_handleScroll);
+    getData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_handleScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: LoadingView(
+        status: _loadingStatus,
+        loadingContent: const PlatformAdaptiveProgressIndicator(),
+        errorContent: Text('error~~ nothing to show'),
+        successContent: ListView.builder(
+          controller: _scrollController,
+          itemBuilder: (BuildContext context, int index) =>
+              GankDetailItem(resultBeans != null ? resultBeans[index] : null),
+          itemCount: resultBeans != null ? resultBeans.length : 0,
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class GankDetailItem extends StatefulWidget {
+  final ResultsListBean _resultsListBean;
+
+  const GankDetailItem(this._resultsListBean);
+
+  @override
+  _GankDetailItemState createState() => _GankDetailItemState();
+}
+
+class _GankDetailItemState extends State<GankDetailItem> {
+  @override
+  Widget build(BuildContext context) {
+
+    return GestureDetector(
+      onTap: (){
+        print(widget._resultsListBean.desc);
+      },
+      child: Card(
+          color: Colors.white,
+          child: Container(
+            padding: EdgeInsets.all(6.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(widget._resultsListBean.desc),
+                widget._resultsListBean.images!=null?
+                AspectRatio(aspectRatio: 4/3,
+                  child: Image.network(widget._resultsListBean.images[0],
+                  height: 70,
+                  fit: BoxFit.fitWidth,),
+                ):SizedBox(height: 1,),
+                SizedBox(height: 10.0,),
+                Text('author: '+widget._resultsListBean.who),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      TipWidget(widget._resultsListBean.type),
+
+                      Text(widget._resultsListBean.publishedAt,maxLines: 1,overflow: TextOverflow.ellipsis,),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )),
     );
   }
 }
