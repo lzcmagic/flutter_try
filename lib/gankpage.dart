@@ -83,7 +83,7 @@ class _GankPageState extends State<GankPage>
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: Container(
-          padding: EdgeInsets.only(top: 22.0),
+          padding: EdgeInsets.only(top: 28.0),
           color: kSecondColor,
           child: TabBar(
             controller: _controller,

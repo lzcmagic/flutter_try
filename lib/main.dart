@@ -72,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
           strings.add(results[i].name);
           stringsIds.add(results[i].en_name);
         }
+        print(strings);
         SPUtil().saveString(strings);
         SPUtil().saveCategoryId(stringsIds);
       }

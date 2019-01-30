@@ -26,6 +26,7 @@ class XianDuPageState extends State<XianDuPage>
   void initTabs() async {
     var categories = await SPUtil().getCategories();
     var categoryIds = await SPUtil().getCategoryIds();
+    print(1111);
     print(categories);
     if (categoryIds != null && categoryIds.length > 0) {
       setState(() {
@@ -65,7 +66,7 @@ class XianDuPageState extends State<XianDuPage>
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: Container(
-          padding: EdgeInsets.only(top: 22.0),
+          padding: EdgeInsets.only(top: 28.0),
           color: kSecondColor,
           child: TabBar(
             tabs: _tabs,
