@@ -192,7 +192,7 @@ class GankDetailItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(resultsListBean.desc),
-            resultsListBean.images != null
+            resultsListBean.images != null&&resultsListBean.images.length>0
                 ? CachedNetworkImage(
               imageUrl: resultsListBean.images[0],
               fit: BoxFit.fitWidth,
