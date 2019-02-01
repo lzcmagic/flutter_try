@@ -8,6 +8,7 @@ import 'package:flutter_app/view/loading_view.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
 import 'package:flutter_app/view/tipwidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'readdetailpage.dart';
 
 class GankPage extends StatefulWidget {
   @override
@@ -175,7 +176,8 @@ class GankDetailItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print(resultsListBean.desc);
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>
+            ReadDetailPage(htmlRaw: resultsListBean.url,title: 'gank',)));
       },
       child: Container(
         decoration: BoxDecoration(
