@@ -1,11 +1,11 @@
 class XDModel {
   bool error;
-  List<ResultsListBean> results;
+  List<XDListBean> results;
 
   static XDModel fromMap(Map<String, dynamic> map) {
     XDModel temp = new XDModel();
     temp.error = map['error'];
-    temp.results = ResultsListBean.fromMapList(map['results']);
+    temp.results = XDListBean.fromMapList(map['results']);
     return temp;
   }
 
@@ -19,7 +19,7 @@ class XDModel {
 
 }
 
-class ResultsListBean {
+class XDListBean {
   String _id;
   String content;
   String cover;
@@ -33,8 +33,8 @@ class ResultsListBean {
   int crawled;
   SiteBean site;
 
-  static ResultsListBean fromMap(Map<String, dynamic> map) {
-    ResultsListBean resultsListBean = new ResultsListBean();
+  static XDListBean fromMap(Map<String, dynamic> map) {
+    XDListBean resultsListBean = new XDListBean();
     resultsListBean._id = map['_id'];
     resultsListBean.content = map['content'];
     resultsListBean.cover = map['cover'];
@@ -50,8 +50,8 @@ class ResultsListBean {
     return resultsListBean;
   }
 
-  static List<ResultsListBean> fromMapList(dynamic mapList) {
-    List<ResultsListBean> list = new List(mapList.length);
+  static List<XDListBean> fromMapList(dynamic mapList) {
+    List<XDListBean> list = new List(mapList.length);
     for (int i = 0; i < mapList.length; i++) {
       list[i] = fromMap(mapList[i]);
     }

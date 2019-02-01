@@ -9,6 +9,7 @@ import 'package:flutter_app/http/gethttp.dart';
 import 'package:flutter_app/util/sputil.dart';
 import 'dart:convert';
 import 'package:flutter_app/model/xdcategory.dart';
+import 'splash.dart';
 
 void main() => runApp(MyApp());
 
@@ -20,8 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: _kDemoTheme,
-      routes: {'newPage': (context) => NewPage()},
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {'home': (context) => MyHomePage(title: 'flutter_demo',)},
+      home: SplashPage(),
     );
   }
 }
@@ -72,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
           strings.add(results[i].name);
           stringsIds.add(results[i].en_name);
         }
-        print(strings);
         SPUtil().saveString(strings);
         SPUtil().saveCategoryId(stringsIds);
       }
@@ -97,16 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
       ),
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: () {
-////          Navigator.pushNamed(context, 'newPage');
-//          Navigator.push(context, new MaterialPageRoute(builder: (context) {
-//            return new NewPage();
-//          }));
-//        },
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
@@ -119,6 +109,7 @@ ThemeData _buildCustomTheme() {
     accentColor: kColorAccent,
     primaryColor: kPrimary,
     buttonColor: kPrimary,
+    appBarTheme: AppBarTheme(iconTheme: IconThemeData(color: kColorAccent)),
     scaffoldBackgroundColor: kBackground,
 //    cardColor: kShrineAltDarkGrey,
     textSelectionColor: kPrimary,

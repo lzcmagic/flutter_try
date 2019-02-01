@@ -1,23 +1,23 @@
-import 'package:flutter/material.dart';
-import 'config/colors.dart';
-import 'package:flutter_app/http/gethttp.dart';
-import 'package:flutter_app/view/loading_view.dart';
-import 'package:flutter_app/model/xdcategory.dart';
-import 'package:flutter_app/model/xiandumodel.dart';
-import 'package:flutter_app/model/xiandugrid.dart';
 import 'dart:convert';
-import 'package:flutter_app/util/sputil.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_app/config/colors.dart';
+import 'package:flutter_app/http/gethttp.dart';
+import 'package:flutter_app/model/xiandugrid.dart';
+import 'package:flutter_app/util/sputil.dart';
+import 'package:flutter_app/view/loading_view.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
+import 'package:flutter_app/xiandudetailpage.dart';
+
+import 'config/colors.dart';
 
 class XianDuPage extends StatefulWidget {
+
   @override
-  XianDuPageState createState() {
-    return new XianDuPageState();
-  }
+  _XianDuPageState createState() =>_XianDuPageState();
 }
 
-class XianDuPageState extends State<XianDuPage>
+class _XianDuPageState extends State<XianDuPage>
     with SingleTickerProviderStateMixin {
   List<Tab> _tabs = <Tab>[];
   TabController _tabController;
@@ -25,21 +25,21 @@ class XianDuPageState extends State<XianDuPage>
 
   void initTabs() async {
     var categories = await SPUtil().getCategories();
-    var categoryIds = await SPUtil().getCategoryIds();
-    print(1111);
     print(categories);
-    if (categoryIds != null && categoryIds.length > 0) {
+    var categoryIds = await SPUtil().getCategoryIds();
+    print(categoryIds);
+    if (categoryIds != null && categoryIds.length > 0 && categories != null) {
+      List<Tab> tabs = <Tab>[];
+      List<DetailXianduPage> details = <DetailXianduPage>[];
+      for (int i = 0; i < categories.length; i++) {
+        tabs.add(Tab(
+          text: categories[i],
+        ));
+        details.add(DetailXianduPage(
+          type: categoryIds[i],
+        ));
+      }
       setState(() {
-        List<Tab> tabs = <Tab>[];
-        List<DetailXianduPage> details = <DetailXianduPage>[];
-        for (int i = 0; i < categories.length; i++) {
-          tabs.add(Tab(
-            text: categories[i],
-          ));
-          details.add(DetailXianduPage(
-            type: categoryIds[i],
-          ));
-        }
         _details = details;
         _tabs = tabs;
         _tabController = TabController(vsync: this, length: _tabs.length);
@@ -132,44 +132,60 @@ class DetailXianduPageState extends State<DetailXianduPage>
             children: List.generate(_listTitles.length, (index) {
               return Card(
                 elevation: 10.0,
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                          border: Border(
-                            top: BorderSide(color: indicatorColor, width: 2.0),
-                            left: BorderSide(color: indicatorColor, width: 2.0),
-                            bottom:
-                                BorderSide(color: indicatorColor, width: 2.0),
-                            right:
-                                BorderSide(color: indicatorColor, width: 2.0),
-                          )),
-                      child: AspectRatio(
-                          aspectRatio: 1.0,
-                          child: Image.network(
-                            _listTitles[index].icon,
-                            fit: BoxFit.fitWidth,
-                          )),
-                    ),
-                    Center(
-                      child: Text(
-                        _listTitles[index].title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 16.0,
-                            color: kPrimary,
-                            shadows: [
-                              Shadow(
-                                  color: kPrimary,
-                                  offset: Offset(2.0, 2.0),
-                                  blurRadius: 5.0)
-                            ]),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => XDDetailPage(
+                                  title: _listTitles[index].title,
+                                  type: _listTitles[index].id,
+                                  url: _listTitles[index].icon,
+                                )));
+                  },
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4.0)),
+                            border: Border(
+                              top:
+                                  BorderSide(color: indicatorColor, width: 2.0),
+                              left:
+                                  BorderSide(color: indicatorColor, width: 2.0),
+                              bottom:
+                                  BorderSide(color: indicatorColor, width: 2.0),
+                              right:
+                                  BorderSide(color: indicatorColor, width: 2.0),
+                            )),
+                        child: AspectRatio(
+                            aspectRatio: 1.0,
+                            child: Image.network(
+                              _listTitles[index].icon,
+                              fit: BoxFit.fitWidth,
+                              filterQuality: FilterQuality.medium,
+                            )),
                       ),
-                    )
-                  ],
+                      Center(
+                        child: Text(
+                          _listTitles[index].title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              color: kPrimary,
+                              shadows: [
+                                Shadow(
+                                    color: kPrimary,
+                                    offset: Offset(2.0, 2.0),
+                                    blurRadius: 5.0)
+                              ]),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               );
             }),

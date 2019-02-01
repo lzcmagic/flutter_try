@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:flutter_app/view/loading_view.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
 import 'package:flutter_app/view/tipwidget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class GankPage extends StatefulWidget {
   @override
@@ -18,7 +19,9 @@ class _GankPageState extends State<GankPage>
   TabController _controller;
 
   static List<Tab> _tabs = [
-    Tab(text: 'all'),
+    Tab(
+      text: 'all',
+    ),
     Tab(
       text: 'android',
     ),
@@ -47,34 +50,6 @@ class _GankPageState extends State<GankPage>
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(GankPage oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-    print('gank didUpdateWidget');
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    print('gank didChangeDependencies');
-  }
-
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
-    print('gank deactivate');
-  }
-
-  @override
-  void reassemble() {
-    // TODO: implement reassemble
-    super.reassemble();
-    print('gank reassemble');
   }
 
   @override
@@ -153,7 +128,6 @@ class _DetailPageState extends State<DetailPage>
   @override
   void initState() {
     super.initState();
-    print(resultBeans.length);
     _scrollController = ScrollController();
     _scrollController.addListener(_handleScroll);
     getData();
@@ -176,7 +150,7 @@ class _DetailPageState extends State<DetailPage>
         successContent: ListView.builder(
           controller: _scrollController,
           itemBuilder: (BuildContext context, int index) =>
-              GankDetailItem(resultBeans != null ? resultBeans[index] : null),
+              GankDetailItem(resultsListBean: resultBeans != null ? resultBeans[index] : null,),
           itemCount: resultBeans != null ? resultBeans.length : 0,
         ),
       ),
@@ -187,53 +161,68 @@ class _DetailPageState extends State<DetailPage>
   bool get wantKeepAlive => true;
 }
 
-class GankDetailItem extends StatefulWidget {
-  final ResultsListBean _resultsListBean;
+class GankDetailItem extends StatelessWidget {
+  final ResultsListBean resultsListBean;
 
-  const GankDetailItem(this._resultsListBean);
+  const GankDetailItem({Key key, this.resultsListBean}) : super(key: key);
 
-  @override
-  _GankDetailItemState createState() => _GankDetailItemState();
-}
+  String _assembleTime() {
+    var dateTime = DateTime.parse(resultsListBean.publishedAt);
+    return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';
+  }
 
-class _GankDetailItemState extends State<GankDetailItem> {
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
-      onTap: (){
-        print(widget._resultsListBean.desc);
+      onTap: () {
+        print(resultsListBean.desc);
       },
-      child: Card(
-          color: Colors.white,
-          child: Container(
-            padding: EdgeInsets.all(6.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(widget._resultsListBean.desc),
-                widget._resultsListBean.images!=null?
-                AspectRatio(aspectRatio: 4/3,
-                  child: Image.network(widget._resultsListBean.images[0],
-                  height: 70,
-                  fit: BoxFit.fitWidth,),
-                ):SizedBox(height: 1,),
-                SizedBox(height: 10.0,),
-                Text('author: '+widget._resultsListBean.who),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      TipWidget(widget._resultsListBean.type),
-
-                      Text(widget._resultsListBean.publishedAt,maxLines: 1,overflow: TextOverflow.ellipsis,),
-                    ],
-                  ),
-                ),
-              ],
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey[400],
+                  width: 1.0,
+                ))),
+        padding: EdgeInsets.all(6.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(resultsListBean.desc),
+            resultsListBean.images != null
+                ? CachedNetworkImage(
+              imageUrl: resultsListBean.images[0],
+              fit: BoxFit.fitWidth,
+              height: 70,
+              fadeOutDuration: Duration(milliseconds: 200),
+              fadeInDuration: Duration(milliseconds: 200),
+            )
+                : SizedBox(
+              height: 1,
             ),
-          )),
+            SizedBox(
+              height: 10.0,
+            ),
+            Text('author: ' + resultsListBean.who),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  TipWidget(resultsListBean.type),
+                  Text(
+                    _assembleTime(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+

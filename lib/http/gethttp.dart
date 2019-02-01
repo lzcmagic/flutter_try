@@ -62,7 +62,8 @@ class GetApi{
   Future<Response> getXianduDetail(String categoryid,int page) async{
     Response response;
     try{
-      response=await HttpProvider().providerDio().get('xiandu/data/id/$categoryid/count/10/page/$page');
+      var dio = HttpProvider().providerDio();
+      response=await dio.get('xiandu/data/id/$categoryid/count/10/page/$page');
     }catch(e){
       print(e.toString());
     }

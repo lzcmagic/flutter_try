@@ -7,12 +7,14 @@ class SPUtil{
 
   Future<bool> saveString(List<String> value) async{
     final SharedPreferences prefs= await SharedPreferences.getInstance();
-    return prefs.setStringList(_kCATEGORIES, value);
+    prefs.setStringList(_kCATEGORIES, value);
+    return prefs.commit();
   }
 
   Future<bool> saveCategoryId(List<String> value) async{
     final SharedPreferences prefs= await SharedPreferences.getInstance();
-    return prefs.setStringList(_kCATEGORYIDS, value);
+    prefs.setStringList(_kCATEGORYIDS, value);
+    return prefs.commit();
   }
 
   Future<List<String>> getCategories() async{
