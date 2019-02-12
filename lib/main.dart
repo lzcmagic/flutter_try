@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'newroute.dart';
+import 'package:flutter_app/view/customRoute.dart';
+
+import 'config/colors.dart';
 import 'gankpage.dart';
+import 'splash.dart';
 import 'welfarepage.dart';
 import 'xiandupage.dart';
-import 'mine.dart';
 import 'config/colors.dart';
 import 'package:flutter_app/http/gethttp.dart';
 import 'package:flutter_app/util/sputil.dart';
@@ -21,7 +23,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: _kDemoTheme,
-      routes: {'home': (context) => MyHomePage(title: 'flutter_demo',)},
+      routes: {
+        'home': (context) => MyHomePage(
+              title: 'flutter_demo',
+            )
+      },
       home: SplashPage(),
     );
   }
@@ -29,15 +35,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -47,18 +44,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  List<BottomNavigationBarItem> bottomItems = [
-    BottomNavigationBarItem(icon: Icon(Icons.description), title: Text('gank')),
-    BottomNavigationBarItem(icon: Icon(Icons.image), title: Text('welfare')),
-    BottomNavigationBarItem(icon: Icon(Icons.receipt), title: Text('relax')),
-    BottomNavigationBarItem(icon: Icon(Icons.message), title: Text('mine')),
-  ];
 
   final _widgetOptions = [
     GankPage(),
-    WelfarePage(),
     XianDuPage(),
-    MinePage(),
   ];
 
   @override
@@ -80,23 +69,43 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: _widgetOptions.elementAt(_currentIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: bottomItems,
-        currentIndex: _currentIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.description),
+                onPressed: () {
+                  setState(() {
+                    _currentIndex = 0;
+                  });
+                }),
+            IconButton(
+                icon: Icon(Icons.receipt),
+                onPressed: () {
+                  setState(() {
+                    _currentIndex = 1;
+                  });
+                })
+          ],
+        ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(CustomFadeRoute(widget: WelfarePage()));
+        },
+        child: Icon(Icons.camera,semanticLabel: 'welfare',color: Colors.white70,),
+        backgroundColor: Colors.grey[900],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
@@ -109,6 +118,7 @@ ThemeData _buildCustomTheme() {
     accentColor: kColorAccent,
     primaryColor: kPrimary,
     buttonColor: kPrimary,
+    bottomAppBarColor: kPrimary,
     appBarTheme: AppBarTheme(iconTheme: IconThemeData(color: kColorAccent)),
     scaffoldBackgroundColor: kBackground,
 //    cardColor: kShrineAltDarkGrey,
@@ -137,8 +147,7 @@ TextTheme _buildShrineTextTheme(TextTheme base) {
         ),
       )
       .apply(
-//    fontFamily: 'Rubik',
-        displayColor: kColorAccent,
-        bodyColor: kColorAccent,
+        displayColor: textColor,
+        bodyColor: textColor,
       );
 }

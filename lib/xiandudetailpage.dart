@@ -6,6 +6,7 @@ import 'readdetailpage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_app/view/loading_view.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
+import 'package:flutter_app/view/customRoute.dart';
 
 class XDDetailPage extends StatefulWidget {
   final String title;
@@ -27,7 +28,6 @@ class _XDDetailPageState extends State<XDDetailPage> {
   LoadingStatus _loadingStatus = LoadingStatus.idle;
 
   void getData() {
-    print(widget.type);
     GetApi().getXianduDetail(widget.type, _currentPage).then((res) {
       XDModel xdModel = XDModel.fromMap(json.decode(res.toString()));
       if (xdModel != null && !xdModel.error) {
@@ -121,7 +121,7 @@ class _DetailItemPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 140,
+      height: 142,
       decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
@@ -132,13 +132,18 @@ class _DetailItemPage extends StatelessWidget {
       padding: EdgeInsets.all(12.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return ReadDetailPage(
-              htmlRaw: _xdListBean.url,
-              title: _title,
-            );
-          }));
+          Navigator.of(context).push(CustomSlideRoute(
+              widget: ReadDetailPage(
+            htmlRaw: _xdListBean.url,
+            title: _title,
+          )));
+//          Navigator.push(context,
+//              MaterialPageRoute(builder: (BuildContext context) {
+//            return ReadDetailPage(
+//              htmlRaw: _xdListBean.url,
+//              title: _title,
+//            );
+//          }));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -172,8 +177,12 @@ class _DetailItemPage extends StatelessWidget {
             ),
             Center(
               child: _xdListBean.cover != null && _xdListBean.cover.length > 5
-                  ? Image(image: CachedNetworkImageProvider(_xdListBean.cover,scale: 5/3),
-              width: 140,fit: BoxFit.fitWidth,)
+                  ? Image(
+                      image: CachedNetworkImageProvider(_xdListBean.cover,
+                          scale: 5 / 3),
+                      width: 140,
+                      fit: BoxFit.fitWidth,
+                    )
                   : SizedBox(
                       width: 1.0,
                     ),

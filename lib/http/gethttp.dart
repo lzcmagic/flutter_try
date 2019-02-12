@@ -69,4 +69,15 @@ class GetApi{
     }
     return response;
   }
+
+  Future<Response> getSearchDate(String searchStr, int page) async{
+    Response response;
+    try{
+      var dio = HttpProvider().providerDio();
+      response=await dio.get('search/query/$searchStr/category/all/count/10/page/$page');
+    }catch(e){
+      print(e.toString());
+    }
+    return response;
+  }
 }

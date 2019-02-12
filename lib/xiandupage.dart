@@ -25,9 +25,7 @@ class _XianDuPageState extends State<XianDuPage>
 
   void initTabs() async {
     var categories = await SPUtil().getCategories();
-    print(categories);
     var categoryIds = await SPUtil().getCategoryIds();
-    print(categoryIds);
     if (categoryIds != null && categoryIds.length > 0 && categories != null) {
       List<Tab> tabs = <Tab>[];
       List<DetailXianduPage> details = <DetailXianduPage>[];
@@ -63,19 +61,47 @@ class _XianDuPageState extends State<XianDuPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Container(
-          padding: EdgeInsets.only(top: 28.0),
-          color: kSecondColor,
-          child: TabBar(
-            tabs: _tabs,
-            controller: _tabController,
-            isScrollable: true,
-            indicatorColor: indicatorColor,
+      appBar: AppBar(
+        title: Text('闲读'),
+        actions: <Widget>[
+          PopupMenuButton<XianduBehavior>(
+            onSelected: (XianduBehavior value) {
+            },
+            itemBuilder: (BuildContext context) =>
+            <PopupMenuItem<XianduBehavior>>[
+              const PopupMenuItem<XianduBehavior>(
+                  value: XianduBehavior.collect,
+                  child: Text(
+                    'collect',
+                    style: TextStyle(color: Colors.white70),
+                  )),
+              const PopupMenuItem<XianduBehavior>(
+                  value: XianduBehavior.settings,
+                  child: Text(
+                    'settings',
+                    style: TextStyle(color: Colors.white70),
+                  )),
+            ],
           ),
-        ),
+        ],
+        bottom: TabBar(tabs: _tabs,
+        isScrollable: true,
+        indicatorColor: indicatorColor,
+        controller: _tabController,),
       ),
+//      appBar: PreferredSize(
+//        preferredSize: Size.fromHeight(kToolbarHeight),
+//        child: Container(
+//          padding: EdgeInsets.only(top: 28.0),
+//          color: kSecondColor,
+//          child: TabBar(
+//            tabs: _tabs,
+//            controller: _tabController,
+//            isScrollable: true,
+//            indicatorColor: indicatorColor,
+//          ),
+//        ),
+//      ),
       body: new TabBarView(
         controller: _tabController,
         children: _details,
@@ -90,12 +116,10 @@ class DetailXianduPage extends StatefulWidget {
   const DetailXianduPage({Key key, this.type}) : super(key: key);
 
   @override
-  DetailXianduPageState createState() {
-    return DetailXianduPageState();
-  }
+  _DetailXianduPageState createState() =>_DetailXianduPageState();
 }
 
-class DetailXianduPageState extends State<DetailXianduPage>
+class _DetailXianduPageState extends State<DetailXianduPage>
     with AutomaticKeepAliveClientMixin {
   List<TitleListBean> _listTitles = <TitleListBean>[];
   LoadingStatus _loadingStatus = LoadingStatus.idle;
@@ -197,4 +221,9 @@ class DetailXianduPageState extends State<DetailXianduPage>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+enum XianduBehavior{
+  collect,
+  settings
 }

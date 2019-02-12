@@ -4,6 +4,7 @@ class SPUtil{
 
   final String _kCATEGORIES='categories';
   final String _kCATEGORYIDS='category_ids';
+  final String _kHISTORY_SEARCH='history_search';
 
   Future<bool> saveString(List<String> value) async{
     final SharedPreferences prefs= await SharedPreferences.getInstance();
@@ -25,5 +26,25 @@ class SPUtil{
   Future<List<String>> getCategoryIds() async{
     final SharedPreferences prefs= await SharedPreferences.getInstance();
     return prefs.getStringList(_kCATEGORYIDS);
+  }
+
+
+  Future<bool> saveHistorySearch(String value) async{
+    final SharedPreferences prefs= await SharedPreferences.getInstance();
+    var list = await getHistorySearch();
+    if(list==null){
+      list=<String>[];
+    }
+    list.add(value);
+    if(list.length>5){
+      list.removeAt(0);
+    }
+    prefs.setStringList(_kHISTORY_SEARCH, list.reversed.toList());
+    return prefs.commit();
+  }
+
+  Future<List<String>> getHistorySearch() async{
+    final SharedPreferences prefs= await SharedPreferences.getInstance();
+    return prefs.getStringList(_kHISTORY_SEARCH);
   }
 }
