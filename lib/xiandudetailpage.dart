@@ -137,13 +137,6 @@ class _DetailItemPage extends StatelessWidget {
             htmlRaw: _xdListBean.url,
             title: _title,
           )));
-//          Navigator.push(context,
-//              MaterialPageRoute(builder: (BuildContext context) {
-//            return ReadDetailPage(
-//              htmlRaw: _xdListBean.url,
-//              title: _title,
-//            );
-//          }));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,12 +186,3 @@ class _DetailItemPage extends StatelessWidget {
     );
   }
 }
-
-//CachedNetworkImage(
-//imageUrl: _xdListBean.cover,
-//fit: BoxFit.contain,
-//fadeInDuration: Duration(milliseconds: 200),
-//fadeOutDuration: Duration(milliseconds: 200),
-//width: 140.0,
-//height: 120.0,
-//)

@@ -12,6 +12,7 @@ import 'package:flutter_app/view/customRoute.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'readdetailpage.dart';
 import 'package:flutter_app/util/sputil.dart';
+import 'collect.dart';
 
 class GankPage extends StatefulWidget {
   @override
@@ -75,7 +76,11 @@ class _GankPageState extends State<GankPage>
             },
           ),
           PopupMenuButton<GankBehavior>(
-            onSelected: (GankBehavior value) {},
+            onSelected: (GankBehavior value) {
+              if(value==GankBehavior.collect){
+                Navigator.of(context).push(CustomSlideRoute(widget: CollectPage()));
+              }
+            },
             itemBuilder: (BuildContext context) =>
                 <PopupMenuItem<GankBehavior>>[
                   const PopupMenuItem<GankBehavior>(
@@ -206,7 +211,7 @@ class GankDetailItem extends StatelessWidget {
         Navigator.of(context).push(CustomSlideRoute(
             widget: ReadDetailPage(
           htmlRaw: resultsListBean.url,
-          title: 'gank',
+          title: resultsListBean.desc,
         )));
       },
       child: Container(
@@ -309,6 +314,11 @@ class _GankSearchDelegate extends SearchDelegate<String> {
     super.showResults(context);
   }
 
+
+  String _assembleTime(String date) {
+    var dateTime = DateTime.parse(date);
+    return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';
+  }
   @override
   Widget buildResults(BuildContext context) {
     return Center(
@@ -318,7 +328,16 @@ class _GankSearchDelegate extends SearchDelegate<String> {
                     title: Text(searchList[index].desc == null
                             ? 'null'
                             : searchList[index].desc),
-                    onTap: () {},
+                    subtitle: Text(searchList[index].publishedAt == null
+                        ? 'null'
+                        : _assembleTime(searchList[index].publishedAt)),
+                    onTap: () {
+                      Navigator.of(context).push(CustomSlideRoute(widget:
+                      ReadDetailPage(
+                        htmlRaw: searchList[index].url,
+                        title: searchList[index].desc,
+                      )));
+                    },
                   ),
               itemCount:  searchList.length,
             )

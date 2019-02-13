@@ -8,6 +8,7 @@ import 'package:flutter_app/util/sputil.dart';
 import 'package:flutter_app/view/loading_view.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
 import 'package:flutter_app/xiandudetailpage.dart';
+import 'package:flutter_app/view/customRoute.dart';
 
 import 'config/colors.dart';
 
@@ -89,19 +90,6 @@ class _XianDuPageState extends State<XianDuPage>
         indicatorColor: indicatorColor,
         controller: _tabController,),
       ),
-//      appBar: PreferredSize(
-//        preferredSize: Size.fromHeight(kToolbarHeight),
-//        child: Container(
-//          padding: EdgeInsets.only(top: 28.0),
-//          color: kSecondColor,
-//          child: TabBar(
-//            tabs: _tabs,
-//            controller: _tabController,
-//            isScrollable: true,
-//            indicatorColor: indicatorColor,
-//          ),
-//        ),
-//      ),
       body: new TabBarView(
         controller: _tabController,
         children: _details,
@@ -158,14 +146,11 @@ class _DetailXianduPageState extends State<DetailXianduPage>
                 elevation: 10.0,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => XDDetailPage(
-                                  title: _listTitles[index].title,
-                                  type: _listTitles[index].id,
-                                  url: _listTitles[index].icon,
-                                )));
+                    Navigator.of(context).push(CustomSlideRoute(widget:XDDetailPage(
+                      title: _listTitles[index].title,
+                      type: _listTitles[index].id,
+                      url: _listTitles[index].icon,
+                    )));
                   },
                   child: Stack(
                     children: <Widget>[
