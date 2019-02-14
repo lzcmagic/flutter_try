@@ -26,10 +26,10 @@ class _GankPageState extends State<GankPage>
   String _lastSelectStr = '';
 
   static List<Tab> _tabs = [
-    Tab(text: 'all'),
-    Tab(text: 'android'),
-    Tab(text: 'ios'),
-    Tab(text: 'web')
+    Tab(text: '全部'),
+    Tab(text: 'Android'),
+    Tab(text: 'iOS'),
+    Tab(text: '前端')
   ];
 
   List<DetailPage> _detailPages = [
@@ -53,9 +53,10 @@ class _GankPageState extends State<GankPage>
 
   @override
   Widget build(BuildContext context) {
+    final snackbar=SnackBar(content: Text('no settings ~'));
     return Scaffold(
       appBar: AppBar(
-        title: Text('gank'),
+        title: Text('Gank.io'),
         bottom: TabBar(
           tabs: _tabs,
           isScrollable: false,
@@ -79,6 +80,9 @@ class _GankPageState extends State<GankPage>
             onSelected: (GankBehavior value) {
               if(value==GankBehavior.collect){
                 Navigator.of(context).push(CustomSlideRoute(widget: CollectPage()));
+              }
+              if(value==GankBehavior.settings){
+                Scaffold.of(context).showSnackBar(snackbar);
               }
             },
             itemBuilder: (BuildContext context) =>

@@ -9,7 +9,7 @@ import 'package:flutter_app/view/loading_view.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
 import 'package:flutter_app/xiandudetailpage.dart';
 import 'package:flutter_app/view/customRoute.dart';
-
+import 'collect.dart';
 import 'config/colors.dart';
 
 class XianDuPage extends StatefulWidget {
@@ -61,12 +61,19 @@ class _XianDuPageState extends State<XianDuPage>
 
   @override
   Widget build(BuildContext context) {
+    final snackbar=SnackBar(content: Text('no settings ~'));
     return Scaffold(
       appBar: AppBar(
         title: Text('闲读'),
         actions: <Widget>[
           PopupMenuButton<XianduBehavior>(
             onSelected: (XianduBehavior value) {
+              if(value==XianduBehavior.collect){
+                Navigator.of(context).push(CustomSlideRoute(widget: CollectPage()));
+              }
+              if(value==XianduBehavior.settings){
+                Scaffold.of(context).showSnackBar(snackbar);
+              }
             },
             itemBuilder: (BuildContext context) =>
             <PopupMenuItem<XianduBehavior>>[

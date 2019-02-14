@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/util/sqlutil.dart';
+import 'package:flutter_app/config/colors.dart';
 
 class ReadDetailPage extends StatefulWidget {
   final String htmlRaw;
@@ -16,10 +17,16 @@ class ReadDetailPage extends StatefulWidget {
 class _ReadDetailPageState extends State<ReadDetailPage> {
   IconData _iconData = Icons.favorite_border;
 
-  /** 复制到剪粘板 */
-  static copyToClipboard(final String text) {
-    if (text == null) return;
-    Clipboard.setData(new ClipboardData(text: text));
+  @override
+  void initState() {
+    super.initState();
+    MySql().queryDataByUrl(widget.htmlRaw).then((dao) {
+      if (dao != null) {
+        setState(() {
+          _iconData = Icons.favorite;
+        });
+      }
+    });
   }
 
   @override
@@ -29,6 +36,7 @@ class _ReadDetailPageState extends State<ReadDetailPage> {
         body: Builder(
       builder: (context) => Container(
             child: WebviewScaffold(
+              allowFileURLs: true,
               url: widget.htmlRaw,
               appBar: AppBar(
                 title: Text(widget.title),
@@ -41,17 +49,21 @@ class _ReadDetailPageState extends State<ReadDetailPage> {
                       onPressed: () {
                         if (_iconData == Icons.favorite_border) {
                           //收藏
-                          setState(() {
-                            MySql()
-                                .insertData(widget.title, widget.htmlRaw, 0)
-                                .then((dynamic) {
+                          MySql()
+                              .insertData(widget.title, widget.htmlRaw, 0)
+                              .then((num) {
+                            setState(() {
                               _iconData = Icons.favorite;
                             });
                           });
                         } else {
                           //取消
-                          setState(() {
-                            _iconData = Icons.favorite_border;
+                          MySql().deleteData(widget.htmlRaw).then((num) {
+                            if (num > 0) {
+                              setState(() {
+                                _iconData = Icons.favorite_border;
+                              });
+                            }
                           });
                         }
                       }),

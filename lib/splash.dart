@@ -3,6 +3,8 @@ import 'package:flutter_app/http/gethttp.dart';
 import 'package:flutter_app/model/xdcategory.dart';
 import 'dart:convert';
 import 'package:flutter_app/util/sputil.dart';
+import 'package:flutter_app/view/customRoute.dart';
+import 'home.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -25,7 +27,7 @@ class _SplashPageState extends State<SplashPage>
     var response = await GetApi().getXianduCategories();
     XDCategory xdCategory =
         XDCategory.fromMap(json.decode(response.toString()));
-    if (xdCategory != null && !xdCategory.error) {
+    if (xdCategory != null &&xdCategory.error!=null&& !xdCategory.error) {
       var results = xdCategory.results;
       List<String> strings = <String>[];
       List<String> stringsIds = <String>[];
@@ -35,6 +37,8 @@ class _SplashPageState extends State<SplashPage>
       }
       await SPUtil().saveString(strings);
       await SPUtil().saveCategoryId(stringsIds);
+      _countDown();
+    }else{
       _countDown();
     }
   }
@@ -49,7 +53,7 @@ class _SplashPageState extends State<SplashPage>
     _controller
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushReplacementNamed('home');
+          Navigator.of(context).pushReplacement(CustomSlideRoute(widget: MyHomePage()));
         }
       })
       ..addListener(() {

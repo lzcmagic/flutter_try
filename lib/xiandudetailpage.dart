@@ -135,7 +135,7 @@ class _DetailItemPage extends StatelessWidget {
           Navigator.of(context).push(CustomSlideRoute(
               widget: ReadDetailPage(
             htmlRaw: _xdListBean.url,
-            title: _title,
+            title: _xdListBean.title,
           )));
         },
         child: Row(

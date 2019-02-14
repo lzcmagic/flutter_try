@@ -33,7 +33,9 @@ class LoadingViewState extends State<LoadingView>
   AnimationController _successController;
 
   bool get loadingContentVisible => _loadingController.value == 1.0;
+
   bool get errorContentVisible => _errorController.value == 1.0;
+
   bool get successContentVisible => _successController.value == 1.0;
 
   Widget firstChild;
@@ -165,17 +167,7 @@ class _TransitionAnimation extends StatelessWidget {
     @required this.controller,
     @required this.child,
     @required this.isVisible,
-  })  : _opacity = Tween(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: controller,
-            curve: const Interval(
-              0.000,
-              0.650,
-              curve: Curves.ease,
-            ),
-          ),
-        ),
-        _yTranslation = Tween(begin: 40.0, end: 0.0).animate(
+  }) : _opacity = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(
             parent: controller,
             curve: const Interval(
@@ -192,7 +184,6 @@ class _TransitionAnimation extends StatelessWidget {
   final bool isVisible;
 
   final Animation<double> _opacity;
-  final Animation<double> _yTranslation;
 
   @override
   Widget build(BuildContext context) {
@@ -204,16 +195,9 @@ class _TransitionAnimation extends StatelessWidget {
             : IgnorePointer(
                 key: key,
                 ignoring: !isVisible,
-                child: Transform(
-                  transform: Matrix4.translationValues(
-                    0.0,
-                    _yTranslation.value,
-                    0.0,
-                  ),
-                  child: Opacity(
-                    opacity: _opacity.value,
-                    child: child,
-                  ),
+                child: Opacity(
+                  opacity: _opacity.value,
+                  child: child,
                 ),
               );
       },

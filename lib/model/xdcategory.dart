@@ -4,8 +4,10 @@ class XDCategory {
 
   static XDCategory fromMap(Map<String, dynamic> map) {
     XDCategory temp = new XDCategory();
-    temp.error = map['error'];
-    temp.results = CategoryListBean.fromMapList(map['results']);
+    if (map != null) {
+      temp.error = map['error'];
+      temp.results = CategoryListBean.fromMapList(map['results']);
+    }
     return temp;
   }
 
@@ -16,7 +18,6 @@ class XDCategory {
     }
     return list;
   }
-
 }
 
 class CategoryListBean {
