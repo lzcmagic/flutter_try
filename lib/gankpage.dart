@@ -130,10 +130,11 @@ class _DetailPageState extends State<DetailPage>
   int currentPage = 1;
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   ScrollController _scrollController;
+  bool _canRefresh=true;
 
   void _handleScroll() {
     var position = _scrollController.position;
-    if (position.pixels == position.maxScrollExtent) {
+    if (position.pixels == position.maxScrollExtent&&_canRefresh) {
       currentPage++;
       getData();
     }
@@ -144,6 +145,11 @@ class _DetailPageState extends State<DetailPage>
       var decode = json.decode(res.toString());
       GKModel gkModels = GKModel.fromMap(decode);
       if (!gkModels.error) {
+        if(gkModels.results.length<10){
+          _canRefresh=false;
+        }else{
+          _canRefresh=true;
+        }
         setState(() {
           _loadingStatus = LoadingStatus.success;
           resultBeans.addAll(gkModels.results);

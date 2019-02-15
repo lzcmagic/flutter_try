@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_app/config/colors.dart';
-import 'package:flutter_app/view/loading_view.dart';
-import 'package:flutter_app/http/gethttp.dart';
 import 'dart:convert';
-import 'package:flutter_app/model/gankmodel.dart';
-import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_app/view/customRoute.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_app/http/gethttp.dart';
+import 'package:flutter_app/model/gankmodel.dart';
+import 'package:flutter_app/view/loading_view.dart';
+import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
+
 import 'imagedetailpage.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class WelfarePage extends StatefulWidget {
   @override
@@ -19,11 +20,17 @@ class _WelfarePageState extends State<WelfarePage> {
   int currentPage = 1;
   List<ResultsListBean> _results = <ResultsListBean>[];
   ScrollController _scrollController;
+  bool _canRefresh=true;
 
   void getData() {
     GetApi().getGankInfo('福利', currentPage).then((res) {
       GKModel gkModel = GKModel.fromMap(json.decode(res.toString()));
       if (gkModel != null && gkModel.results.length > 0) {
+        if(gkModel.results.length<10){
+          _canRefresh=false;
+        }else{
+          _canRefresh=true;
+        }
         setState(() {
           _loadingStatus = LoadingStatus.success;
           _results.addAll(gkModel.results);
@@ -42,7 +49,7 @@ class _WelfarePageState extends State<WelfarePage> {
 
   void _handleScroll() {
     var position = _scrollController.position;
-    if (position.pixels == position.maxScrollExtent) {
+    if (position.pixels == position.maxScrollExtent&&_canRefresh) {
       currentPage++;
       getData();
     }
@@ -94,8 +101,7 @@ class _WelfarePageState extends State<WelfarePage> {
                               child: Hero(
                                 tag: _results[index].id,
                                 child: ImageDetailPage(
-                                  fromType: 0,
-                                    imageUrl: _results[index].url),
+                                    fromType: 0, imageUrl: _results[index].url),
                               ),
                             ),
                           );
@@ -104,11 +110,15 @@ class _WelfarePageState extends State<WelfarePage> {
                       child: Hero(
                         tag: _results[index].id,
                         child: Card(
-                          child: Image(
+                          child: FadeInImage(
                               fit: BoxFit.cover,
+                              placeholder: MemoryImage(kTransparentImage),
                               image: CachedNetworkImageProvider(
                                   _results[index].url, errorListener: () {
-                                return Icon(Icons.error);
+                                return Icon(
+                                  Icons.error,
+                                  color: Colors.white70,
+                                );
                               })),
                         ),
                       ));

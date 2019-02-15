@@ -26,11 +26,17 @@ class _XDDetailPageState extends State<XDDetailPage> {
   List<XDListBean> xdLists = <XDListBean>[];
   ScrollController _scrollController;
   LoadingStatus _loadingStatus = LoadingStatus.idle;
+  bool _canRefresh = true;
 
   void getData() {
     GetApi().getXianduDetail(widget.type, _currentPage).then((res) {
       XDModel xdModel = XDModel.fromMap(json.decode(res.toString()));
       if (xdModel != null && !xdModel.error) {
+        if (xdModel.results.length < 10) {
+          _canRefresh = false;
+        } else {
+          _canRefresh = true;
+        }
         setState(() {
           _loadingStatus = LoadingStatus.success;
           xdLists.addAll(xdModel.results);
@@ -49,7 +55,7 @@ class _XDDetailPageState extends State<XDDetailPage> {
 
   void _handleScroll() {
     var position = _scrollController.position;
-    if (position.pixels == position.maxScrollExtent) {
+    if (position.pixels == position.maxScrollExtent&&_canRefresh) {
       _currentPage++;
       getData();
     }
