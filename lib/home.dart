@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:flutter_app/util/sputil.dart';
 import 'package:flutter_app/view/customRoute.dart';
 import 'welfarepage.dart';
+import 'package:flutter_app/config/myIcons.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -57,14 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             IconButton(
-                icon: Icon(Icons.description),
+                icon: Icon(MyIcons.smile,color: Colors.white70,semanticLabel: 'Gank',),
                 onPressed: () {
                   setState(() {
                     _currentIndex = 0;
                   });
                 }),
             IconButton(
-                icon: Icon(Icons.receipt),
+                icon: Icon(MyIcons.smile,color: Colors.white70,semanticLabel: '闲读',),
                 onPressed: () {
                   setState(() {
                     _currentIndex = 1;

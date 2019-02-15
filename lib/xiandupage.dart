@@ -80,13 +80,13 @@ class _XianDuPageState extends State<XianDuPage>
               const PopupMenuItem<XianduBehavior>(
                   value: XianduBehavior.collect,
                   child: Text(
-                    'collect',
+                    '收藏',
                     style: TextStyle(color: Colors.white70),
                   )),
               const PopupMenuItem<XianduBehavior>(
                   value: XianduBehavior.settings,
                   child: Text(
-                    'settings',
+                    '设置',
                     style: TextStyle(color: Colors.white70),
                   )),
             ],

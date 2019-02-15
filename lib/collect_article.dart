@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/util/sqlutil.dart';
-import 'package:flutter_app/util/sqlutil.dart';
 import 'package:flutter_app/view/customRoute.dart';
 import 'readdetailpage.dart';
 
@@ -25,7 +24,7 @@ class _CollectArticlePageState extends State<CollectArticlePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return _collectArticles.length>0? ListView.builder(
       itemBuilder: (context, index) => Dismissible(
             key: ObjectKey(_collectArticles[index]),
             direction: DismissDirection.startToEnd,
@@ -61,6 +60,6 @@ class _CollectArticlePageState extends State<CollectArticlePage> {
             ),
           ),
       itemCount: _collectArticles.length,
-    );
+    ):Center(child: Text('还没有收藏的内容哦～'),);
   }
 }

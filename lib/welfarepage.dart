@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:flutter_app/model/gankmodel.dart';
 import 'package:flutter_app/view/platform_adaptive_progress_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_app/view/customRoute.dart';
+import 'imagedetailpage.dart';
 
 class WelfarePage extends StatefulWidget {
   @override
@@ -68,7 +70,7 @@ class _WelfarePageState extends State<WelfarePage> {
         appBar: AppBar(
 //          leading: IconButton(icon: Icon(icon), onPressed: null),
           title: Text(
-            'welfare',
+            '干货',
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -81,19 +83,35 @@ class _WelfarePageState extends State<WelfarePage> {
                 controller: _scrollController,
                 itemCount: _results.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,childAspectRatio: 3/5),
+                    crossAxisCount: 2, childAspectRatio: 3 / 5),
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: AspectRatio(
-                      aspectRatio: 3 / 5,
-                      child: Image(
-                          fit: BoxFit.fitHeight,
-                          image: CachedNetworkImageProvider(_results[index].url,
-                              scale: 3 / 5, errorListener: () {
-                            return Icon(Icons.error);
-                          })),
-                    ),
-                  );
+                  return InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute<void>(
+                            builder: (BuildContext context) {
+                          return Scaffold(
+                            body: SizedBox.expand(
+                              child: Hero(
+                                tag: _results[index].id,
+                                child: ImageDetailPage(
+                                  fromType: 0,
+                                    imageUrl: _results[index].url),
+                              ),
+                            ),
+                          );
+                        }));
+                      },
+                      child: Hero(
+                        tag: _results[index].id,
+                        child: Card(
+                          child: Image(
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(
+                                  _results[index].url, errorListener: () {
+                                return Icon(Icons.error);
+                              })),
+                        ),
+                      ));
                 }),
           ),
         ));

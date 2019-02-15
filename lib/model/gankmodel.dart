@@ -20,7 +20,7 @@ class GKModel {
 }
 
 class ResultsListBean {
-  String _id;
+  String id;
   String createdAt;
   String desc;
   String publishedAt;
@@ -33,7 +33,7 @@ class ResultsListBean {
 
   static ResultsListBean fromMap(Map<String, dynamic> map) {
     ResultsListBean resultsListBean = new ResultsListBean();
-    resultsListBean._id = map['_id'];
+    resultsListBean.id = map['_id'];
     resultsListBean.createdAt = map['createdAt'];
     resultsListBean.desc = map['desc'];
     resultsListBean.publishedAt = map['publishedAt'];

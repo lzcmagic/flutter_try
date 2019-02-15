@@ -90,13 +90,13 @@ class _GankPageState extends State<GankPage>
                   const PopupMenuItem<GankBehavior>(
                       value: GankBehavior.collect,
                       child: Text(
-                        'collect',
+                        '收藏',
                         style: TextStyle(color: Colors.white70),
                       )),
                   const PopupMenuItem<GankBehavior>(
                       value: GankBehavior.settings,
                       child: Text(
-                        'settings',
+                        '设置',
                         style: TextStyle(color: Colors.white70),
                       )),
                 ],
