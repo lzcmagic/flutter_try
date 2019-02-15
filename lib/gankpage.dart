@@ -22,7 +22,9 @@ class GankPage extends StatefulWidget {
 class _GankPageState extends State<GankPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController _controller;
-  final _GankSearchDelegate _delegate = _GankSearchDelegate();
+  ScrollController _innerController;
+  _GankSearchDelegate _delegate;
+
   String _lastSelectStr = '';
 
   static List<Tab> _tabs = [
@@ -39,21 +41,35 @@ class _GankPageState extends State<GankPage>
     DetailPage('前端'),
   ];
 
+  void _handleSearchScroll() {
+    var position = _innerController.position;
+    if (position.pixels == position.maxScrollExtent) {
+      if (_delegate != null) {
+        _delegate.refreshSearchResults();
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _innerController = ScrollController();
+    _innerController..addListener(_handleSearchScroll);
+    _delegate = _GankSearchDelegate(searchController: _innerController);
     _controller = TabController(vsync: this, length: _tabs.length);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _innerController.removeListener(_handleSearchScroll);
+    _innerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final snackbar=SnackBar(content: Text('no settings ~'));
+    final snackbar = SnackBar(content: Text('no settings ~'));
     return Scaffold(
       appBar: AppBar(
         title: Text('Gank.io'),
@@ -68,7 +84,7 @@ class _GankPageState extends State<GankPage>
             icon: Icon(Icons.search),
             onPressed: () async {
               final String selectStr =
-                  await showSearch(context: context, delegate: _delegate);
+              await showSearch(context: context, delegate: _delegate);
               if (selectStr != null && selectStr != _lastSelectStr) {
                 setState(() {
                   _lastSelectStr = selectStr;
@@ -78,28 +94,29 @@ class _GankPageState extends State<GankPage>
           ),
           PopupMenuButton<GankBehavior>(
             onSelected: (GankBehavior value) {
-              if(value==GankBehavior.collect){
-                Navigator.of(context).push(CustomSlideRoute(widget: CollectPage()));
+              if (value == GankBehavior.collect) {
+                Navigator.of(context)
+                    .push(CustomSlideRoute(widget: CollectPage()));
               }
-              if(value==GankBehavior.settings){
+              if (value == GankBehavior.settings) {
                 Scaffold.of(context).showSnackBar(snackbar);
               }
             },
             itemBuilder: (BuildContext context) =>
-                <PopupMenuItem<GankBehavior>>[
-                  const PopupMenuItem<GankBehavior>(
-                      value: GankBehavior.collect,
-                      child: Text(
-                        '收藏',
-                        style: TextStyle(color: Colors.white70),
-                      )),
-                  const PopupMenuItem<GankBehavior>(
-                      value: GankBehavior.settings,
-                      child: Text(
-                        '设置',
-                        style: TextStyle(color: Colors.white70),
-                      )),
-                ],
+            <PopupMenuItem<GankBehavior>>[
+              const PopupMenuItem<GankBehavior>(
+                  value: GankBehavior.collect,
+                  child: Text(
+                    '收藏',
+                    style: TextStyle(color: Colors.white70),
+                  )),
+              const PopupMenuItem<GankBehavior>(
+                  value: GankBehavior.settings,
+                  child: Text(
+                    '设置',
+                    style: TextStyle(color: Colors.white70),
+                  )),
+            ],
           ),
         ],
       ),
@@ -130,11 +147,11 @@ class _DetailPageState extends State<DetailPage>
   int currentPage = 1;
   LoadingStatus _loadingStatus = LoadingStatus.loading;
   ScrollController _scrollController;
-  bool _canRefresh=true;
+  bool _canRefresh = true;
 
   void _handleScroll() {
     var position = _scrollController.position;
-    if (position.pixels == position.maxScrollExtent&&_canRefresh) {
+    if (position.pixels == position.maxScrollExtent && _canRefresh) {
       currentPage++;
       getData();
     }
@@ -145,10 +162,10 @@ class _DetailPageState extends State<DetailPage>
       var decode = json.decode(res.toString());
       GKModel gkModels = GKModel.fromMap(decode);
       if (!gkModels.error) {
-        if(gkModels.results.length<10){
-          _canRefresh=false;
-        }else{
-          _canRefresh=true;
+        if (gkModels.results.length < 10) {
+          _canRefresh = false;
+        } else {
+          _canRefresh = true;
         }
         setState(() {
           _loadingStatus = LoadingStatus.success;
@@ -190,9 +207,10 @@ class _DetailPageState extends State<DetailPage>
         errorContent: Text('error~~ nothing to show'),
         successContent: ListView.builder(
           controller: _scrollController,
-          itemBuilder: (BuildContext context, int index) => GankDetailItem(
+          itemBuilder: (BuildContext context, int index) =>
+              GankDetailItem(
                 resultsListBean:
-                    resultBeans != null ? resultBeans[index] : null,
+                resultBeans != null ? resultBeans[index] : null,
               ),
           itemCount: resultBeans != null ? resultBeans.length : 0,
         ),
@@ -220,18 +238,18 @@ class GankDetailItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(CustomSlideRoute(
             widget: ReadDetailPage(
-          htmlRaw: resultsListBean.url,
-          title: resultsListBean.desc,
-        )));
+              htmlRaw: resultsListBean.url,
+              title: resultsListBean.desc,
+            )));
       },
       child: Container(
         decoration: BoxDecoration(
             color: Colors.white,
             border: Border(
                 bottom: BorderSide(
-              color: Colors.grey[400],
-              width: 1.0,
-            ))),
+                  color: Colors.grey[400],
+                  width: 1.0,
+                ))),
         padding: EdgeInsets.all(6.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,15 +257,15 @@ class GankDetailItem extends StatelessWidget {
             Text(resultsListBean.desc),
             resultsListBean.images != null && resultsListBean.images.length > 0
                 ? CachedNetworkImage(
-                    imageUrl: resultsListBean.images[0],
-                    fit: BoxFit.fitWidth,
-                    height: 70,
-                    fadeOutDuration: Duration(milliseconds: 200),
-                    fadeInDuration: Duration(milliseconds: 200),
-                  )
+              imageUrl: resultsListBean.images[0],
+              fit: BoxFit.fitWidth,
+              height: 70,
+              fadeOutDuration: Duration(milliseconds: 200),
+              fadeInDuration: Duration(milliseconds: 200),
+            )
                 : SizedBox(
-                    height: 1,
-                  ),
+              height: 1,
+            ),
             SizedBox(
               height: 10.0,
             ),
@@ -274,6 +292,17 @@ class GankDetailItem extends StatelessWidget {
 }
 
 class _GankSearchDelegate extends SearchDelegate<String> {
+
+  _GankSearchDelegate({this.searchController});
+
+  List<SearchListBean> searchList = <SearchListBean>[];
+  int _page = 1;
+  final ScrollController searchController;
+
+  void refreshSearchResults() {
+      print(112211);
+  }
+
   @override
   ThemeData appBarTheme(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -293,11 +322,11 @@ class _GankSearchDelegate extends SearchDelegate<String> {
       query.isEmpty
           ? SizedBox()
           : IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                query = '';
-                showSuggestions(context);
-              })
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+            showSuggestions(context);
+          })
     ];
   }
 
@@ -312,48 +341,51 @@ class _GankSearchDelegate extends SearchDelegate<String> {
         });
   }
 
-  List<SearchListBean> searchList;
-
-  @override
-  void showResults(BuildContext context) async {
-    searchList = <SearchListBean>[];
-    var res = await GetApi().getSearchDate(query, 1);
+  _getSearchData() async {
+    var res = await GetApi().getSearchDate(query, _page);
     SearchModel searchModel = SearchModel.fromMap(json.decode(res.toString()));
     searchList.addAll(searchModel.results);
     await SPUtil().saveHistorySearch(query);
-    super.showResults(context);
   }
 
+  @override
+  void showResults(BuildContext context) async {
+    _getSearchData();
+    super.showResults(context);
+  }
 
   String _assembleTime(String date) {
     var dateTime = DateTime.parse(date);
     return '${dateTime.year}年${dateTime.month}月${dateTime.day}日';
   }
+
   @override
   Widget buildResults(BuildContext context) {
     return Center(
       child: searchList != null && searchList.length > 0
           ? ListView.builder(
-              itemBuilder: (context, index) => ListTile(
-                    title: Text(searchList[index].desc == null
-                            ? 'null'
-                            : searchList[index].desc),
-                    subtitle: Text(searchList[index].publishedAt == null
-                        ? 'null'
-                        : _assembleTime(searchList[index].publishedAt)),
-                    onTap: () {
-                      Navigator.of(context).push(CustomSlideRoute(widget:
-                      ReadDetailPage(
-                        htmlRaw: searchList[index].url,
-                        title: searchList[index].desc,
-                      )));
-                    },
-                  ),
-              itemCount:  searchList.length,
-            )
-          : Center(
-              child: Text('nothing to show ~~'),
+        controller: searchController,
+        itemBuilder: (context, index) =>
+            ListTile(
+              title: Text(searchList[index].desc == null
+                  ? 'null'
+                  : searchList[index].desc),
+              subtitle: Text(searchList[index].publishedAt == null
+                  ? 'null'
+                  : _assembleTime(searchList[index].publishedAt)),
+              onTap: () {
+                Navigator.of(context).push(CustomSlideRoute(
+                    widget: ReadDetailPage(
+                      htmlRaw: searchList[index].url,
+                      title: searchList[index].desc,
+                    )));
+              },
             ),
+        itemCount: searchList.length,
+      )
+          : Center(
+        child: Text('nothing to show ~~'),
+      ),
     );
   }
 
