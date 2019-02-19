@@ -13,6 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'readdetailpage.dart';
 import 'package:flutter_app/util/sputil.dart';
 import 'collect.dart';
+import 'search_list.dart';
 
 class GankPage extends StatefulWidget {
   @override
@@ -84,7 +85,7 @@ class _GankPageState extends State<GankPage>
             icon: Icon(Icons.search),
             onPressed: () async {
               final String selectStr =
-              await showSearch(context: context, delegate: _delegate);
+                  await showSearch(context: context, delegate: _delegate);
               if (selectStr != null && selectStr != _lastSelectStr) {
                 setState(() {
                   _lastSelectStr = selectStr;
@@ -103,20 +104,20 @@ class _GankPageState extends State<GankPage>
               }
             },
             itemBuilder: (BuildContext context) =>
-            <PopupMenuItem<GankBehavior>>[
-              const PopupMenuItem<GankBehavior>(
-                  value: GankBehavior.collect,
-                  child: Text(
-                    '收藏',
-                    style: TextStyle(color: Colors.white70),
-                  )),
-              const PopupMenuItem<GankBehavior>(
-                  value: GankBehavior.settings,
-                  child: Text(
-                    '设置',
-                    style: TextStyle(color: Colors.white70),
-                  )),
-            ],
+                <PopupMenuItem<GankBehavior>>[
+                  const PopupMenuItem<GankBehavior>(
+                      value: GankBehavior.collect,
+                      child: Text(
+                        '收藏',
+                        style: TextStyle(color: Colors.white70),
+                      )),
+                  const PopupMenuItem<GankBehavior>(
+                      value: GankBehavior.settings,
+                      child: Text(
+                        '设置',
+                        style: TextStyle(color: Colors.white70),
+                      )),
+                ],
           ),
         ],
       ),
@@ -207,10 +208,9 @@ class _DetailPageState extends State<DetailPage>
         errorContent: Text('error~~ nothing to show'),
         successContent: ListView.builder(
           controller: _scrollController,
-          itemBuilder: (BuildContext context, int index) =>
-              GankDetailItem(
+          itemBuilder: (BuildContext context, int index) => GankDetailItem(
                 resultsListBean:
-                resultBeans != null ? resultBeans[index] : null,
+                    resultBeans != null ? resultBeans[index] : null,
               ),
           itemCount: resultBeans != null ? resultBeans.length : 0,
         ),
@@ -238,18 +238,18 @@ class GankDetailItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(CustomSlideRoute(
             widget: ReadDetailPage(
-              htmlRaw: resultsListBean.url,
-              title: resultsListBean.desc,
-            )));
+          htmlRaw: resultsListBean.url,
+          title: resultsListBean.desc,
+        )));
       },
       child: Container(
         decoration: BoxDecoration(
             color: Colors.white,
             border: Border(
                 bottom: BorderSide(
-                  color: Colors.grey[400],
-                  width: 1.0,
-                ))),
+              color: Colors.grey[400],
+              width: 1.0,
+            ))),
         padding: EdgeInsets.all(6.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,15 +257,15 @@ class GankDetailItem extends StatelessWidget {
             Text(resultsListBean.desc),
             resultsListBean.images != null && resultsListBean.images.length > 0
                 ? CachedNetworkImage(
-              imageUrl: resultsListBean.images[0],
-              fit: BoxFit.fitWidth,
-              height: 70,
-              fadeOutDuration: Duration(milliseconds: 200),
-              fadeInDuration: Duration(milliseconds: 200),
-            )
+                    imageUrl: resultsListBean.images[0],
+                    fit: BoxFit.fitWidth,
+                    height: 70,
+                    fadeOutDuration: Duration(milliseconds: 200),
+                    fadeInDuration: Duration(milliseconds: 200),
+                  )
                 : SizedBox(
-              height: 1,
-            ),
+                    height: 1,
+                  ),
             SizedBox(
               height: 10.0,
             ),
@@ -292,15 +292,15 @@ class GankDetailItem extends StatelessWidget {
 }
 
 class _GankSearchDelegate extends SearchDelegate<String> {
-
   _GankSearchDelegate({this.searchController});
 
   List<SearchListBean> searchList = <SearchListBean>[];
   int _page = 1;
   final ScrollController searchController;
+  BuildContext _context;
 
   void refreshSearchResults() {
-      print(112211);
+    print(112211);
   }
 
   @override
@@ -322,11 +322,11 @@ class _GankSearchDelegate extends SearchDelegate<String> {
       query.isEmpty
           ? SizedBox()
           : IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: () {
-            query = '';
-            showSuggestions(context);
-          })
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                query = '';
+                showSuggestions(context);
+              })
     ];
   }
 
@@ -350,7 +350,8 @@ class _GankSearchDelegate extends SearchDelegate<String> {
 
   @override
   void showResults(BuildContext context) async {
-    _getSearchData();
+    searchList.clear();
+    await _getSearchData();
     super.showResults(context);
   }
 
@@ -361,31 +362,46 @@ class _GankSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
+    _context = context;
     return Center(
       child: searchList != null && searchList.length > 0
           ? ListView.builder(
-        controller: searchController,
-        itemBuilder: (context, index) =>
-            ListTile(
-              title: Text(searchList[index].desc == null
-                  ? 'null'
-                  : searchList[index].desc),
-              subtitle: Text(searchList[index].publishedAt == null
-                  ? 'null'
-                  : _assembleTime(searchList[index].publishedAt)),
-              onTap: () {
-                Navigator.of(context).push(CustomSlideRoute(
-                    widget: ReadDetailPage(
-                      htmlRaw: searchList[index].url,
-                      title: searchList[index].desc,
-                    )));
+              controller: searchController,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == searchList.length) {
+                  return ListTile(
+                    title: Text(searchList.length < 10 ? '已经到底了～' : '查看全部',
+                    style: TextStyle(color: Color.fromRGBO(214, 137, 16, 1.0)),),
+                    trailing: searchList.length < 10
+                        ? null
+                        : Icon(Icons.arrow_forward_ios,color: Colors.grey[400],),
+                    onTap: (){
+                        Navigator.of(context).push(CustomSlideRoute(widget: SearchListPage(keyWord: query,)));
+                    },
+                  );
+                } else {
+                  return ListTile(
+                    title: Text(searchList[index].desc == null
+                        ? 'null'
+                        : searchList[index].desc),
+                    subtitle: Text(searchList[index].publishedAt == null
+                        ? 'null'
+                        : _assembleTime(searchList[index].publishedAt)),
+                    onTap: () {
+                      Navigator.of(context).push(CustomSlideRoute(
+                          widget: ReadDetailPage(
+                        htmlRaw: searchList[index].url,
+                        title: searchList[index].desc,
+                      )));
+                    },
+                  );
+                }
               },
-            ),
-        itemCount: searchList.length,
-      )
+              itemCount: searchList.length > 0 ? searchList.length + 1 : 0,
+            )
           : Center(
-        child: Text('nothing to show ~~'),
-      ),
+              child: Text('nothing to show ~~'),
+            ),
     );
   }
 
@@ -417,6 +433,11 @@ class _GankSearchDelegate extends SearchDelegate<String> {
       },
       itemCount: _history.length,
     );
+  }
+
+  @override
+  void textChanged(TextEditingValue value) {
+    // TODO: implement textChanged
   }
 }
 

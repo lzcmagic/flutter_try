@@ -106,7 +106,8 @@ class _ImageDetailPageState extends State<ImageDetailPage>
               ..translate(_offset.dx, _offset.dy)
               ..scale(_scale),
             child: Image(
-                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                fit: BoxFit.contain,
                 image: CachedNetworkImageProvider(
                   widget.imageUrl,
                 )),
