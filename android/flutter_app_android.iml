@@ -18,6 +18,9 @@
       <sourceFolder url="file://$MODULE_DIR$/app/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/app/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/.gradle/6.1.1" />
+      <excludeFolder url="file://$MODULE_DIR$/.gradle/checksums" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/libraries" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_app/model/gankmodel.dart';
 
 class HttpProvider{
 
@@ -14,11 +13,11 @@ class HttpProvider{
   }
 
   HttpProvider._internal(this.dio);
-  static Options _generateOptions(){
-    return Options(
+
+  static BaseOptions _generateOptions() {
+    return BaseOptions(
       baseUrl: 'http://gank.io/api/',
       connectTimeout: 10000,
-
     );
   }
 
