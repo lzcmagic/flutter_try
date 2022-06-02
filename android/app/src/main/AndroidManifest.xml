@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.flutterapp">
 
     <!-- The INTERNET permission is required for development. Specifically,
@@ -15,7 +16,10 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="休闲时光"
-        android:icon="@mipmap/logo_icon">
+        android:usesCleartextTraffic="true"
+        android:icon="@mipmap/logo_icon"
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:targetApi="m">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
